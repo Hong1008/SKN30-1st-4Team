@@ -1,4 +1,5 @@
 import streamlit as st
+from domain.ev_service import EVSchema
 
 def render_sidebar(df):
     """
@@ -19,7 +20,7 @@ def render_sidebar(df):
         
         st.subheader("📊 데이터 개요")
         st.metric("전체 지역 수", len(df))
-        st.metric("평균 불편 지수", f"{df['불편_지수'].mean():.2f}")
+        st.metric("평균 불편 지수", f"{df[EVSchema.discomfort_index].mean():.2f}")
         
         st.markdown("---")
         st.subheader("🔍 필터링")
@@ -27,13 +28,13 @@ def render_sidebar(df):
         # 지역 선택
         selected_region = st.selectbox(
             "지역 선택",
-            options=['전체'] + df['시도'].tolist(),
+            options=['전체'] + df[EVSchema.region].tolist(),
             index=0
         )
         
         # 순위 범위 필터
-        min_rank = int(df['불편_순위'].min())
-        max_rank = int(df['불편_순위'].max())
+        min_rank = int(df[EVSchema.discomfort_rank].min())
+        max_rank = int(df[EVSchema.discomfort_rank].max())
         rank_range = st.slider(
             "불편 순위 범위",
             min_value=min_rank,
