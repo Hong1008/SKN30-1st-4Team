@@ -1,6 +1,6 @@
 import mysql.connector
 from mysql.connector import Error
-from .config import DB_CONFIG
+from .config import settings
 
 class DBManager:
     """
@@ -9,7 +9,7 @@ class DBManager:
     """
     
     def __init__(self):
-        self.config = DB_CONFIG
+        self.config = settings.DB_CONFIG
         self.connection = None
 
     def connect(self):

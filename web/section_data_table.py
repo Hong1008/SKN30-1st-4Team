@@ -1,7 +1,8 @@
 import streamlit as st
 import pandas as pd
+from domain.ev_service import EVSchema
 
-def section_data_table(df_filtered, selected_region):
+def section_data_table(df_filtered, selected_region, key="default"):
     """상세 데이터 테이블과 다운로드 버튼을 렌더링합니다."""
     st.markdown("---")
     
@@ -12,7 +13,8 @@ def section_data_table(df_filtered, selected_region):
         data=csv_data,
         file_name=f'ev_dashboard_{selected_region}_{pd.Timestamp.now().strftime("%Y%m%d")}.csv',
         mime='text/csv',
-        width='content'
+        width='content',
+        key=f'download_{key}'
     )
 
     st.dataframe(
@@ -20,8 +22,8 @@ def section_data_table(df_filtered, selected_region):
         width='stretch',
         hide_index=True,
         column_config={
-            "불편_지수": st.column_config.NumberColumn("불편 지수", format="%.2f"),
-            "전기차_등록수": st.column_config.NumberColumn("전기차 등록수", format="%d"),
-            "충전기_대수": st.column_config.NumberColumn("충전기 대수", format="%d"),
+            EVSchema.discomfort_index: st.column_config.NumberColumn("불편 지수", format="%.2f"),
+            EVSchema.ev_count: st.column_config.NumberColumn("전기차 등록수", format="%d"),
+            EVSchema.charger_count: st.column_config.NumberColumn("충전기 대수", format="%d"),
         }
     )

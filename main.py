@@ -1,7 +1,44 @@
-from sample import sample_page
+from web.view import show_data_by_year
+from web.view import show_data_by_area
+from domain.ev_service import load_ev_data, filter_data
+import streamlit as st
 
 def main():
-    sample_page()
+
+    st.set_page_config(
+        page_title="전기차 충전 인프라 대시보드",
+        page_icon="🔌",
+        layout="wide"
+    )
+
+    df = st.cache_data(load_ev_data)()
+    df_filtered = filter_data(df, '전체', (1,2))
+
+    # 탭 스타일 커스텀
+    st.markdown("""
+        <style>
+        .stTabs [data-baseweb="tab"] {
+            padding: 16px 32px;
+        }
+        .stTabs [data-baseweb="tab"] p {
+            font-size: 18px;
+        }
+        </style>
+    """, unsafe_allow_html=True)
+
+    # 탭 생성
+    tab1, tab2 = st.tabs(["연도별", "지역별"])
+
+    with tab1:
+        show_data_by_year(df, df_filtered)
+
+    with tab2:
+        show_data_by_area(df, df_filtered)
+
+
+    # 푸터
+    st.divider()
+    st.caption("© SKN30-1st-4Team")
 
 if __name__ == "__main__":
     main()
