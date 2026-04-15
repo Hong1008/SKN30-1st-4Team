@@ -60,3 +60,73 @@ def filter_data(df, selected_region, rank_range):
                             (df_filtered['불편_순위'] <= rank_range[1])]
     
     return df_filtered
+
+def load_ev_data_csv():
+    """
+    CSV 파일들로부터 데이터를 로드하여 연도별/지역별 중첩 딕셔너리 형태로 반환합니다.
+    
+    Returns:
+        dict: {년도: {시도: {지역, 전기차 등록수, 충전기 대수, 충전소 수}}}
+    """
+    from pathlib import Path
+
+    # 1. 경로 설정
+    base_path = Path(__file__).parent / "src_clean" / "한국전력공사_지역별 현황정보"
+    
+    file_ev = base_path / "전기차_18-24_year.csv"
+    file_charger = base_path / "충전기_16-24_year.csv"
+    file_station = base_path / "충전소_16-24_year.csv"
+
+    # 2. 지역명 정규화 매퍼
+    REGION_MAP = {
+        '서울특별시': '서울', '인천광역시': '인천', '대전광역시': '대전', '대구광역시': '대구',
+        '광주광역시': '광주', '울산광역시': '울산', '부산광역시': '부산', '세종특별자치시': '세종',
+        '경기도': '경기', '강원도': '강원', '충청북도': '충북', '충청남도': '충남',
+        '전라북도': '전북', '전라남도': '전남', '경상북도': '경북', '경상남도': '경남',
+        '제주특별자치도': '제주'
+    }
+
+    def process_csv(path, value_name):
+        df = pd.read_csv(path)
+        # '합계' 행 제외
+        df = df[df['지역'] != '합계']
+        # 지역명 정규화
+        df['지역'] = df['지역'].replace(REGION_MAP)
+        # Wide to Long (연도 컬럼을 행으로 변환)
+        df_melted = df.melt(id_vars=['지역'], var_name='연도', value_name=value_name)
+        return df_melted
+
+    # 3. 데이터 로드 및 전처리
+    df_ev = process_csv(file_ev, '전기차 등록수')
+    df_charger = process_csv(file_charger, '충전기 대수')
+    df_station = process_csv(file_station, '충전소 수')
+
+    # 4. 데이터 병합 (Outer join으로 누락된 연도 대응)
+    merged_df = pd.merge(df_ev, df_charger, on=['지역', '연도'], how='outer')
+    merged_df = pd.merge(merged_df, df_station, on=['지역', '연도'], how='outer')
+
+    # 5. 수치형 데이터 정수 변환 및 결측치 처리
+    cols = ['전기차 등록수', '충전기 대수', '충전소 수']
+    merged_df[cols] = merged_df[cols].fillna(0).astype(int)
+
+    # 6. 중첩 딕셔너리 변환 (2018년도 이후 데이터만 포함)
+    result = {}
+    for _, row in merged_df.iterrows():
+        year = str(row['연도'])
+        region = row['지역']
+        
+        # 2016, 2017년 제외
+        if int(year) < 2018:
+            continue
+            
+        if year not in result:
+            result[year] = {}
+        
+        result[year][region] = {
+            '지역': region,
+            '전기차 등록수': row['전기차 등록수'],
+            '충전기 대수': row['충전기 대수'],
+            '충전소 수': row['충전소 수']
+        }
+    
+    return result

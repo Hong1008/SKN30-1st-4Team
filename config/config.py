@@ -6,6 +6,8 @@
 import os
 from dotenv import load_dotenv
 from pathlib import Path
+from pydantic import BaseModel, Field
+from typing import Dict, Any
 
 # 1. 프로젝트 루트 경로 설정 (프로젝트 어느 위치에서든 .env를 찾기 위함)
 # Path(__file__)는 이 파일(config.py)의 위치를 의미합니다.
@@ -18,17 +20,28 @@ if env_path.exists():
 else:
     load_dotenv() # 기본 .env 로드 시도
 
-# 3. 데이터베이스 연결 설정 (os.getenv를 통해 보안 유지)
-# 팀원 가이드: 자신의 .env 파일에 아래 키값들을 추가하세요.
-DB_CONFIG = {
-    'host': os.getenv('DB_HOST', 'localhost'),
-    'port': int(os.getenv('DB_PORT', 3306)),
-    'user': os.getenv('DB_USER'),
-    'password': os.getenv('DB_PASSWORD'),
-    'database': os.getenv('DB_NAME', 'practice_db'),
-    'connection_timeout': 10
-}
+class AppSettings(BaseModel):
+    """
+    프로젝트 전역 설정을 속성 단위로 관리하는 DTO 클래스입니다.
+    Pydantic을 사용하여 타입 검증 및 환경변수 매핑을 수행합니다.
+    """
+    # 1. 공공 데이터 API 설정
+    DATA_GOV_URL: str = Field(default=os.getenv('DATA_GOV_URL', 'http://apis.data.go.kr'))
+    DATA_GOV_SERVICE_KEY: str | None = Field(default=os.getenv('DATA_GOV_SERVICE_KEY'))
 
-# 4. 공공 데이터 API 설정
-DATA_GOV_URL = os.getenv('DATA_GOV_URL', 'http://apis.data.go.kr')
-DATA_GOV_SERVICE_KEY = os.getenv('DATA_GOV_SERVICE_KEY')
+    # 2. DB 사용 여부 (문자열 "true" 등을 실제 bool로 변환)
+    USE_DB: bool = Field(default=os.getenv('USE_DB', 'false').lower() == 'true')
+
+    # 3. 데이터베이스 연결 설정
+    DB_CONFIG: Dict[str, Any] = Field(default={
+        'host': os.getenv('DB_HOST', 'localhost'),
+        'port': int(os.getenv('DB_PORT', 3306)),
+        'user': os.getenv('DB_USER'),
+        'password': os.getenv('DB_PASSWORD'),
+        'database': os.getenv('DB_NAME', 'practice_db'),
+        'connection_timeout': 10
+    })
+
+# 전역 설정 객체 생성 (싱글톤)
+settings = AppSettings()
+

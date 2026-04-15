@@ -1,6 +1,6 @@
 import requests
 from typing import Optional, Dict
-from config.config import DATA_GOV_URL, DATA_GOV_SERVICE_KEY
+from config.config import settings
 
 def _call_api(path: str, params: Dict) -> Optional[Dict]:
     """
@@ -17,13 +17,13 @@ def _call_api(path: str, params: Dict) -> Optional[Dict]:
     # URL이 '/'로 시작하지 않을 경우를 대비해 처리
     if not path.startswith('/'):
         path = '/' + path
-    url = f"{DATA_GOV_URL}{path}"
+    url = f"{settings.DATA_GOV_URL}{path}"
     
     # 2. 필수 기본 파라미터 추가
     # 서비스키는 .env에서 가져온 값을 사용하며, JSON 형식을 기본으로 요청합니다.
     api_params = params.copy()
     if 'serviceKey' not in api_params and 'ServiceKey' not in api_params:
-        api_params['serviceKey'] = DATA_GOV_SERVICE_KEY
+        api_params['serviceKey'] = settings.DATA_GOV_SERVICE_KEY
     
     if 'dataType' not in api_params:
         api_params['dataType'] = 'JSON'
