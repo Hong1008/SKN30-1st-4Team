@@ -11,9 +11,9 @@ file_path = os.path.join(base_path, file_name)
 # 2. 파일 읽기 (상단 타이틀 3줄 제외)
 try:
     df = pd.read_csv(file_path, skiprows=3)
-    print(f"파일을 성공적으로 읽었습니다: {file_path}")
+    print(f"✅ 파일을 성공적으로 읽었습니다: {file_path}")
 except FileNotFoundError:
-    print(f"파일을 찾을 수 없습니다. 경로를 확인하세요: {file_path}")
+    print(f"❌ 파일을 찾을 수 없습니다. 경로를 확인하세요: {file_path}")
     exit()
 
 # 3. 숫자 데이터 컬럼 설정 및 변환
