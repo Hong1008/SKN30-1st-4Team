@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 from domain.ev_service import EVSchema
 
-def section_data_table(df_filtered, selected_region):
+def section_data_table(df_filtered, selected_region, key="default"):
     """상세 데이터 테이블과 다운로드 버튼을 렌더링합니다."""
     st.markdown("---")
     
@@ -13,7 +13,8 @@ def section_data_table(df_filtered, selected_region):
         data=csv_data,
         file_name=f'ev_dashboard_{selected_region}_{pd.Timestamp.now().strftime("%Y%m%d")}.csv',
         mime='text/csv',
-        width='content'
+        width='content',
+        key=f'download_{key}'
     )
 
     st.dataframe(

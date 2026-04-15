@@ -2,7 +2,7 @@ import streamlit as st
 import plotly.express as px
 from domain.ev_service import EVSchema
 
-def section_comparison_chart(df):
+def section_comparison_chart(df, idkey):
     """수요-공급 비교 바 차트를 렌더링합니다."""
     st.markdown("---")
     st.subheader("📈 수요-공급 비교 분석")
@@ -27,4 +27,4 @@ def section_comparison_chart(df):
             showarrow=True, arrowhead=1, yshift=10
         )
 
-    st.plotly_chart(fig, width='stretch')
+    st.plotly_chart(fig, width='stretch', key=idkey)
