@@ -5,10 +5,11 @@ import sys
 import os
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
+import time
 import data_gov_client
 
 pageNo = 1
-numOfRows = 10
+numOfRows = 9999
 
 path = '/B552584/EvCharger/getChargerInfo'
 result = []
@@ -17,9 +18,6 @@ total_count = None
 while True:
   params = {'numOfRows': numOfRows, 'pageNo': pageNo}
   json_object = data_gov_client._call_api(path, params)
-
-  print(len(json_object['items']['item']))
-  break
 
   if json_object is None:
     print(f"API 호출 최종 실패 (pageNo={pageNo}) — 수집된 {len(result)}건으로 진행합니다.")
@@ -41,17 +39,19 @@ while True:
     break
 
   pageNo += 1
+  time.sleep(1)  # 연속 요청으로 인한 서버 차단 방지
 
-# final = pd.json_normalize(result)
+final = pd.json_normalize(result)
 
-# # statId 기준 중복 제거 (chgerType 숫자 기준 가장 큰 값 유지)
-# final['chgerType'] = final['chgerType'].astype(int)
-# final = (final.sort_values('chgerType', ascending=False)
-#               .drop_duplicates(subset='statId', keep='first')
-#               .reset_index(drop=True))
-# print(f'중복 제거 후: {len(final)}행')
+print(f'총 개수: {len(final)}행')
+# statId 기준 중복 제거 (chgerType 숫자 기준 가장 큰 값 유지)
+final['chgerType'] = final['chgerType'].astype(int)
+final = (final.sort_values('chgerType', ascending=False)
+              .drop_duplicates(subset='statId', keep='first')
+              .reset_index(drop=True))
+print(f'중복 제거 후: {len(final)}행')
 
-# final.to_csv('ev_charger_all_clean.csv', index=False, encoding='utf-8-sig')
-# print(f'저장 완료: {len(final)}행')
+final.to_csv('ev_charger_all_final.csv', index=False, encoding='utf-8-sig')
+print(f'저장 완료: {len(final)}행')
 
 # print(final.info())

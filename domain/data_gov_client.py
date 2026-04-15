@@ -35,8 +35,7 @@ def _call_api(path: str, params: Dict) -> Optional[Dict]:
 
     try:
         # 3. API 호출
-        # timeout을 설정하여 무한 대기 방지
-        response = requests.get(url, params=api_params, timeout=10)
+        response = requests.get(url, params=api_params)
 
         # 4. 응답 상태 확인
         response.raise_for_status()
