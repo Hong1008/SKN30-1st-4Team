@@ -6,38 +6,16 @@ from domain.ev_schema import EVSchema
 
 
 class EV_CSV_PATH(Enum):
-    ev_car = "전기차_18-24_year.csv"
-    ev_charger = "충전기_16-24_year.csv"
-    ev_station = "충전소_16-24_year.csv"
+    ev_car = "전기차_등록_현황_광역_통합.csv"
+    ev_charger = "전기차_충전기_합계_연도별_변환.csv"
 
 
 def process_csv(path: EV_CSV_PATH, value_name):
-    base_path = Path(__file__).parent / "src_clean" / "한국전력공사_지역별 현황정보"
+    base_path = Path(__file__).parent / "src_clean"
     file = base_path / path.value
-    REGION_MAP = {
-        "서울특별시": "서울",
-        "인천광역시": "인천",
-        "대전광역시": "대전",
-        "대구광역시": "대구",
-        "광주광역시": "광주",
-        "울산광역시": "울산",
-        "부산광역시": "부산",
-        "세종특별자치시": "세종",
-        "경기도": "경기",
-        "강원도": "강원",
-        "충청북도": "충북",
-        "충청남도": "충남",
-        "전라북도": "전북",
-        "전라남도": "전남",
-        "경상북도": "경북",
-        "경상남도": "경남",
-        "제주특별자치도": "제주",
-    }
     df = pd.read_csv(file)
     # '합계' 행 제외
     df = df[df["지역"] != "합계"]
-    # 지역명 정규화
-    df["지역"] = df["지역"].replace(REGION_MAP)
     # Wide to Long (연도 컬럼을 행으로 변환)
     df_melted = df.melt(id_vars=["지역"], var_name=EVSchema.year, value_name=value_name)
     return df_melted
@@ -49,13 +27,11 @@ def load_ev_by_year():
     """
     df_ev = process_csv(EV_CSV_PATH.ev_car, EVSchema.ev_count)
     df_charger = process_csv(EV_CSV_PATH.ev_charger, EVSchema.charger_count)
-    df_station = process_csv(EV_CSV_PATH.ev_station, EVSchema.station_count)
 
     merged_df = pd.merge(df_ev, df_charger, on=["지역", EVSchema.year], how="outer")
-    merged_df = pd.merge(merged_df, df_station, on=["지역", EVSchema.year], how="outer")
     merged_df = merged_df.rename(columns={"지역": EVSchema.region})
 
-    cols = [EVSchema.ev_count, EVSchema.charger_count, EVSchema.station_count]
+    cols = [EVSchema.ev_count, EVSchema.charger_count]
     merged_df[cols] = merged_df[cols].fillna(0).astype(int)
 
     result = {}
@@ -77,7 +53,6 @@ def load_ev_by_year():
             EVSchema.region: region,
             EVSchema.ev_count: row[EVSchema.ev_count],
             EVSchema.charger_count: row[EVSchema.charger_count],
-            EVSchema.station_count: row[EVSchema.station_count],
             EVSchema.discomfort_index: round(row[EVSchema.ev_count] / charger, 2),
         }
 

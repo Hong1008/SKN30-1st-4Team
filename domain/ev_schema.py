@@ -10,7 +10,6 @@ class EVSchema(pa.DataFrameModel):
     """
     region: Series[str] = pa.Field(alias="시도")
     ev_count: Series[int] = pa.Field(alias="전기차_등록수", ge=0)
-    station_count: Series[int] = pa.Field(alias="충전소_수", ge=0)
     charger_count: Series[int] = pa.Field(alias="충전기_대수", ge=0)
     
     # 필수 아님 (Optional 필드는 nullable=True 혹은 스키마에서 제외 가능)
