@@ -3,6 +3,7 @@ from web.section_map import section_map
 from web.section_data_table import section_data_table
 from web.section_comparison_chart import section_comparison_chart
 from web.section_line_chart import section_line_chart
+from web.section_wordcloud import section_wordcloud
 
 def show_data_by_year(df):
 
@@ -36,12 +37,8 @@ def show_data_by_year(df):
         st.markdown("---")
 
         # 워드 클라우드 자리
-        st.subheader("워드 클라우드")
-        st.markdown(
-            "<div style='height:300px; display:flex; align-items:center; justify-content:center;"
-            " border:2px dashed #aaa; border-radius:8px; color:#aaa;'>워드 클라우드 이미지 자리</div>",
-            unsafe_allow_html=True
-        )
+        section_wordcloud(selected_year)
+
 
 
     section_comparison_chart(df_filtered, 'chart_year')
