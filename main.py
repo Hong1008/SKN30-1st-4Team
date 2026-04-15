@@ -1,6 +1,5 @@
 from web.view import show_data_by_year
 from web.view import show_data_by_area
-from domain.ev_service import load_ev_data, filter_data
 import streamlit as st
 
 def main():
@@ -10,9 +9,6 @@ def main():
         page_icon="🔌",
         layout="wide"
     )
-
-    df = st.cache_data(load_ev_data)()
-    df_filtered = filter_data(df, '전체', (1,2))
 
     # 탭 스타일 커스텀
     st.markdown("""
@@ -30,10 +26,10 @@ def main():
     tab1, tab2 = st.tabs(["연도별", "지역별"])
 
     with tab1:
-        show_data_by_year(df, df_filtered)
+        show_data_by_year()
 
     with tab2:
-        show_data_by_area(df, df_filtered)
+        show_data_by_area()
 
 
     # 푸터

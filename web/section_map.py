@@ -4,9 +4,12 @@ from domain.ev_schema import EVSchema
 from streamlit_folium import st_folium
 
 
-def section_map(df, df_filtered):
+def section_map(df, df_filtered, selected_year):
     """SOS 핫스팟 히트맵을 렌더링합니다."""
-    st.subheader("📍 SOS 핫스팟 히트맵")
+    if type(selected_year) == int:
+        st.subheader(f"📍 {selected_year}년 SOS 핫스팟 히트맵")
+    else:
+        st.subheader(f"📍 SOS 핫스팟 히트맵")
 
     m = folium.Map(
         location=[36.5, 127.5],
