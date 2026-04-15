@@ -20,5 +20,6 @@ dependencies = [
     "streamlit-folium>=0.27.1",
     "plotly>=6.7.0",
     "requests>=2.33.1",
+    "selenium>=4.43.0",
     "xlrd>=2.0.2",
 ]
