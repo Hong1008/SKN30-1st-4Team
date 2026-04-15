@@ -1,13 +1,29 @@
-import streamlit as st
 import pandas as pd
-from domain.ev_service import EVSchema
+import streamlit as st
+from domain.ev_schema import EVSchema
 
-def section_data_table(df_filtered, selected_region, key="default"):
+
+def section_data_table(df, selected_region, key="default"):
     """상세 데이터 테이블과 다운로드 버튼을 렌더링합니다."""
     st.markdown("---")
+
+    if df.empty:
+        st.warning("선택된 조건에 해당하는 데이터가 없습니다.")
+        return
+
+    # 컬럼이 연도이므로 가장 최근 연도 또는 단일 연도를 기준으로 데이터를 추출합니다.
+    target_year = sorted(df.columns.tolist())[-1]
     
+    # 선택된 연도의 데이터를 평탄화(Flat DataFrame)
+    data_list = df[target_year].dropna().tolist()
+    df_filtered = pd.DataFrame(data_list)
+
+    if df_filtered.empty:
+        st.warning("선택된 조건에 해당하는 데이터가 없습니다.")
+        return
+
     st.subheader("📋 상세 데이터 테이블")
-    csv_data = df_filtered.to_csv(index=False).encode('utf-8-sig')
+    csv_data = df_filtered.to_csv(index=False).encode("utf-8-sig")
     st.download_button(
         label="📥 CSV 다운로드",
         data=csv_data,
@@ -19,11 +35,17 @@ def section_data_table(df_filtered, selected_region, key="default"):
 
     st.dataframe(
         df_filtered,
-        width='stretch',
+        width="stretch",
         hide_index=True,
         column_config={
-            EVSchema.discomfort_index: st.column_config.NumberColumn("불편 지수", format="%.2f"),
-            EVSchema.ev_count: st.column_config.NumberColumn("전기차 등록수", format="%d"),
-            EVSchema.charger_count: st.column_config.NumberColumn("충전기 대수", format="%d"),
-        }
+            EVSchema.discomfort_index: st.column_config.NumberColumn(
+                "불편 지수", format="%.2f"
+            ),
+            EVSchema.ev_count: st.column_config.NumberColumn(
+                "전기차 등록수", format="%d"
+            ),
+            EVSchema.charger_count: st.column_config.NumberColumn(
+                "충전기 대수", format="%d"
+            ),
+        },
     )
