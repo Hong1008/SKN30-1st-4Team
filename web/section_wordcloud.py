@@ -7,5 +7,4 @@ def section_wordcloud(selected_year):
   image_path = BASE_DIR / "domain" / "crawling" / f"{selected_year}.jpg"
   if not image_path.exists():
     return
-  st.subheader(selected_year)
   st.image(str(image_path), caption=f"{selected_year} 워드클라우드")
