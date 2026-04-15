@@ -8,7 +8,12 @@ def section_map(df, df_filtered):
     """SOS 핫스팟 히트맵을 렌더링합니다."""
     st.subheader("📍 SOS 핫스팟 히트맵")
 
-    m = folium.Map(location=[36.5, 127.5], zoom_start=7, tiles="CartoDB positron")
+    m = folium.Map(
+        location=[36.5, 127.5],
+        zoom_start=7,
+        # tiles='CartoDB positron'
+        tiles='OpenStreetMap'
+    )
 
     if df_filtered.empty:
         st.warning("선택된 조건에 해당하는 데이터가 없습니다.")
@@ -18,18 +23,8 @@ def section_map(df, df_filtered):
 
         for _, row in df_filtered.iterrows():
             value = row.get(EVSchema.discomfort_index, 0)
-            normalized = (
-                (value - min_val) / (max_val - min_val)
-                if (max_val - min_val) > 0
-                else 0
-            )
-            color = (
-                "blue"
-                if normalized < 0.33
-                else "orange"
-                if normalized < 0.66
-                else "red"
-            )
+            normalized = (value - min_val) / (max_val - min_val) if (max_val - min_val) > 0 else 0
+            color = 'blue' if normalized < 0.33 else 'orange' if normalized < 0.66 else 'red'
 
             popup_html = f"""
             <div style="width: 200px;">
@@ -51,4 +46,4 @@ def section_map(df, df_filtered):
                 popup=folium.Popup(popup_html, max_width=300),
             ).add_to(m)
 
-        st_folium(m, width=1200, height=600, key="main_map")
+        st_folium(m, use_container_width=True, height=600, key="main_map")
