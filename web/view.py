@@ -24,7 +24,7 @@ def show_data_by_year(df):
 
     left, center, right = st.columns([2,0.2,3])
     with left:
-        section_map(df_filtered)
+        section_map(df_filtered, selected_year)
 
     with center:
         pass

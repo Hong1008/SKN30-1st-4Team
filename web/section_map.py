@@ -5,10 +5,12 @@ from domain.ev_schema import EVSchema
 from streamlit_folium import st_folium
 
 
-def section_map(df):
+def section_map(df, selected_year):
     """SOS 핫스팟 히트맵을 렌더링합니다."""
-    st.subheader("📍 SOS 핫스팟 히트맵")
-
+    if selected_year == '전체':
+        st.subheader("📍 SOS 핫스팟 히트맵")
+    else:
+        st.subheader(f"📍 {selected_year}년도 SOS 핫스팟 히트맵")
     m = folium.Map(
         location=[36.5, 127.5],
         zoom_start=7,
@@ -22,7 +24,7 @@ def section_map(df):
 
     # 컬럼이 연도이므로 가장 최근 연도 또는 단일 연도를 기준으로 데이터를 추출합니다.
     target_year = sorted(df.columns.tolist())[-1]
-    
+
     # 선택된 연도의 데이터를 평탄화(Flat DataFrame)
     data_list = df[target_year].dropna().tolist()
     flat_df = pd.DataFrame(data_list)
