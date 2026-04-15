@@ -3,7 +3,7 @@
 # from config import db 으로 DB 객체를 가져올 수 있습니다.
 # =================================================================
 
-from .config import DB_CONFIG
+from .config import settings
 from .db_manager import db
 
-__all__ = ['DB_CONFIG', 'db']
+__all__ = ['settings', 'db']

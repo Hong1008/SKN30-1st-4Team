@@ -41,6 +41,7 @@
 ```bash
 # 의존성 설치 및 실행
 uv sync
+.venv\bin\activate
 uv run streamlit run main.py
 ```
 

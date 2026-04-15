@@ -1,6 +1,6 @@
 import mysql.connector
 from mysql.connector import Error
-from .config import DB_CONFIG
+from .config import settings
 
 class DBManager:
     """
@@ -9,7 +9,7 @@ class DBManager:
     """
     
     def __init__(self):
-        self.config = DB_CONFIG
+        self.config = settings.DB_CONFIG
         self.connection = None
 
     def connect(self):
@@ -45,6 +45,48 @@ class DBManager:
             print(f"쿼리 실행 오류: {e}")
             conn.rollback() # 오류 발생 시 롤백
             return False
+        finally:
+            cursor.close()
+
+    def execute_many(self, query, params_list, chunk_size=1000):
+        """
+        다량의 데이터를 한 번에 INSERT/UPDATE할 때 사용합니다. (배치 쿼리)
+
+        Args:
+            query (str): 실행할 쿼리 템플릿.
+                         예) "INSERT INTO ev_data (region, ev_count) VALUES (%s, %s)"
+            params_list (list[tuple]): 각 행에 해당하는 파라미터 튜플의 리스트.
+                         예) [('서울', 1000), ('경기', 2000), ...]
+            chunk_size (int): 한 번에 처리할 행 수. 기본값 1000.
+                              데이터가 매우 많을 경우 메모리 초과를 방지합니다.
+
+        Returns:
+            int: 성공적으로 삽입된 총 행 수. 실패 시 -1 반환.
+
+        Example:
+            rows = [('서울', 83868, 1396), ('경기', 102000, 2100)]
+            query = "INSERT INTO ev_stats (region, ev_count, charger_count) VALUES (%s, %s, %s)"
+            inserted = db.execute_many(query, rows)
+            print(f"{inserted}건 삽입 완료")
+        """
+        conn = self.connect()
+        if not conn:
+            return -1
+
+        cursor = conn.cursor()
+        total_affected = 0
+        try:
+            # chunk_size 단위로 나누어 처리 (대용량 데이터 안정성 확보)
+            for i in range(0, len(params_list), chunk_size):
+                chunk = params_list[i:i + chunk_size]
+                cursor.executemany(query, chunk)
+                total_affected += cursor.rowcount
+            conn.commit()
+            return total_affected
+        except Error as e:
+            print(f"배치 쿼리 실행 오류: {e}")
+            conn.rollback()
+            return -1
         finally:
             cursor.close()
 

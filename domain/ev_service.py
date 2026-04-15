@@ -1,62 +1,97 @@
+import warnings
+
+from domain.load_by_csv import load_ev_by_year, load_ev_by_region
+from domain.ev_schema import EVSchema
 import pandas as pd
+import pandera.pandas as pa
+
 
 def load_ev_data():
     """
     전국 시도별 전기차 등록 현황 및 충전 인프라 데이터를 로드하고 전처리합니다.
-    
-    Returns:
-        pd.DataFrame: 다음과 같은 컬럼을 포함하는 데이터프레임
-            - 시도, 전기차_등록수, 충전소_수, 충전기_대수, 인구수, 면적_km2, 위도, 경도
-            - 수요_밀도: 인구 만 명당 전기차 수
-            - 공급_밀도: 면적 100km^2당 충전기 수
-            - 불편_지수: 수요 밀도 - 공급 밀도 (지수가 높을수록 인프라 부족)
-            - 불편_순위: 불편 지수에 따른 전국 순위
     """
     # 1) 시도별 전기차 등록 현황 (가상 데이터)
     data = {
-        '시도': ['서울', '부산', '대구', '인천', '광주', '대전', '울산', '세종', '경기', '강원', '충북', '충남', '전북', '전남', '경북', '경남', '제주'],
-        '전기차_등록수': [450000, 120000, 80000, 95000, 50000, 45000, 40000, 35000, 520000, 70000, 60000, 85000, 55000, 75000, 90000, 110000, 65000],
-        '충전소_수': [12000, 3500, 2200, 2800, 1500, 1300, 1100, 1000, 15000, 2000, 1800, 2500, 1600, 2200, 2700, 3200, 1900],
-        '충전기_대수': [35000, 9000, 6000, 7500, 4000, 3500, 3000, 2800, 42000, 5500, 5000, 7000, 4500, 6000, 7500, 8500, 5500],
-        # 필수아님
-        '인구수': [9700000, 3400000, 2400000, 2900000, 1400000, 1450000, 1150000, 370000, 13500000, 1550000, 1580000, 2180000, 1780000, 1840000, 2640000, 3350000, 670000],
-        # 필수아님
-        '면적_km2': [605, 770, 840, 1063, 501, 541, 1063, 614, 10184, 18384, 11858, 10594, 11812, 18392, 10515, 10533, 1849],
-        '위도': [37.5665, 35.1796, 35.8714, 37.4563, 35.1597, 36.3504, 35.5384, 36.4800, 37.5665, 38.0336, 36.6355, 36.6589, 35.8242, 34.8163, 36.5746, 35.2033, 33.4996],
-        '경도': [126.9780, 129.0757, 128.6014, 126.7052, 126.8507, 127.3845, 129.3115, 127.2499, 127.0000, 128.1667, 127.4984, 126.7052, 127.1530, 126.3663, 128.7471, 128.4161, 126.5312]
+        EVSchema.region: [
+            '서울특별시',
+            '경상도',
+            '강원도',
+            '경기도',
+            '인천광역시',
+            '전라도',
+            '제주특별자치도',
+            '충청도',
+        ],
+        EVSchema.population: [9400000, 13000000, 1500000, 13600000, 3000000, 5000000, 670000, 5500000],
+        EVSchema.area: [605, 32000, 16875, 10171, 1062, 20900, 1849, 16600],
+        EVSchema.lat: [37.5665, 35.8000, 37.8228, 37.2636, 37.4563, 35.8000, 33.4996, 36.6000],
+        EVSchema.lon: [126.9780, 128.5000, 128.1555, 127.0286, 126.7052, 127.1000, 126.5312, 127.5000]
     }
-    df = pd.DataFrame(data)
-    
-    # 2) 충전 불편 지수 계산 (수요 대비 공급)
-    df['수요_밀도'] = (df['전기차_등록수'] / df['인구수']) * 10000
-    df['공급_밀도'] = (df['충전기_대수'] / df['면적_km2']) * 100
-    # (불편 지수는 단순 전기차_등록수와 충전기_대수를 비교해도 됨)
-    df['불편_지수'] = df['수요_밀도'] - df['공급_밀도']
-    
-    # 3) 순위 계산
-    df['불편_순위'] = df['불편_지수'].rank(ascending=False).astype(int)
-    
-    return df
+
+    # 메타데이터 lookup 생성 {지역명: {population, area, lat, lon}}
+    meta_lookup = {}
+    for i, r in enumerate(data[EVSchema.region]):
+        meta_lookup[r] = {
+            EVSchema.population: data[EVSchema.population][i],
+            EVSchema.area: data[EVSchema.area][i],
+            EVSchema.lat: data[EVSchema.lat][i],
+            EVSchema.lon: data[EVSchema.lon][i],
+        }
+
+    # if settings.USE_DB:
+    #     ev = db.load_ev()
+    #     year = db.load_ev_by_year(ev)
+    #     region = db.load_ev_by_region(ev)
+    # else:
+    year = load_ev_by_year()
+    region = load_ev_by_region()
+
+    # 2) year 딕셔너리에 메타데이터 삽입
+    for y, regions in year.items():
+        for r, info in regions.items():
+            if r in meta_lookup:
+                info.update(meta_lookup[r])
+
+    # 3) region 딕셔너리에 메타데이터 삽입
+    for r, years in region.items():
+        if r in meta_lookup:
+            for y, info in years.items():
+                info.update(meta_lookup[r])
+
+    df_year = pd.DataFrame(year)
+    df_region = pd.DataFrame(region)
+
+    return df_year, df_region
 
 def filter_data(df, selected_region, rank_range):
     """
     사용자가 선택한 지역 및 불편 순위 범위에 따라 데이터를 필터링합니다.
-
-    Args:
-        df (pd.DataFrame): 원본 데이터프레임
-        selected_region (str): 선택된 지역 (예: '전체', '서울')
-        rank_range (tuple): 선택된 불편 순위 범위 (min, max)
-
-    Returns:
-        pd.DataFrame: 필터링된 결과 데이터프레임
     """
     if selected_region != '전체':
-        df_filtered = df[df['시도'] == selected_region]
+        df_filtered = df[df[EVSchema.region] == selected_region]
     else:
         df_filtered = df.copy()
 
     # 순위 범위 필터 적용
-    df_filtered = df_filtered[(df_filtered['불편_순위'] >= rank_range[0]) & 
-                            (df_filtered['불편_순위'] <= rank_range[1])]
+    df_filtered = df_filtered[(df_filtered[EVSchema.discomfort_rank] >= rank_range[0]) & 
+                            (df_filtered[EVSchema.discomfort_rank] <= rank_range[1])]
     
     return df_filtered
+
+
+# =================================================================
+# Pandera Schema & Validation Helpers
+# =================================================================
+
+
+
+def validate_ev_data(df: pd.DataFrame) -> pd.DataFrame:
+    """
+    Pandera를 사용하여 DataFrame 규격을 검증합니다.
+    실패 시 에러를 발생시키지 않고 Warning만 출력합니다.
+    """
+    try:
+        return EVSchema.validate(df)
+    except pa.errors.SchemaError as e:
+        warnings.warn(f"데이터 규격 검증 실패 (일부 데이터가 누락되거나 형식이 다를 수 있습니다): {e}")
+        return df
