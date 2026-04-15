@@ -1,5 +1,6 @@
 import plotly.express as px
 import streamlit as st
+import pandas as pd
 from domain.ev_schema import EVSchema
 
 
@@ -8,7 +9,19 @@ def section_comparison_chart(df, idkey):
     st.markdown("---")
     st.subheader("📈 수요-공급 비교 분석")
 
-    top_10 = df.sort_values(EVSchema.discomfort_index, ascending=False).head(10)
+    # 컬럼이 연도이므로 가장 최근 연도 또는 단일 연도를 기준으로 데이터를 추출합니다.
+    target_year = sorted(df.columns.tolist())[-1]
+    
+    # 선택된 연도의 데이터를 평탄화(Flat DataFrame)
+    data_list = df[target_year].dropna().tolist()
+    flat_df = pd.DataFrame(data_list)
+
+    if flat_df.empty:
+        st.warning("선택된 조건에 해당하는 데이터가 없습니다.")
+        return
+
+
+    top_10 = flat_df.sort_values(EVSchema.discomfort_index, ascending=False).head(10)
     chart_data = top_10[
         [
             EVSchema.region,
