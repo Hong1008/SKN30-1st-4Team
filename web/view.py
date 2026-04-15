@@ -6,7 +6,7 @@ from web.section_line_chart import section_line_chart
 
 def show_data_by_year(df):
 
-    years = sorted(df.columns.tolist())
+    years = sorted(df.columns.tolist(), reverse=True)
     selected_year = st.segmented_control(
         "연도 선택",
         options=["전체"] + years,
