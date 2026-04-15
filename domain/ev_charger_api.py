@@ -1,37 +1,57 @@
 # 라이브러리 불러오기
-import urllib.request
-import json
 import pandas as pd
-from dotenv import load_dotenv
+
+import sys
 import os
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-# load_dotenv()
+import data_gov_client
 
-# key = os.getenv('bike_key')
-serviceKey = "2mulQFMetApKqR%2Bx0UlbisWvmrIrEkX1pywLhQRE0ygbmrara2tM9iVQIwWH7P36nfwg%2Bmbyzsk7r9Q13KijxQ%3D%3D"
-dataType = 'JSON'
-pageNo = 1 #
-numOfRows = 9999 # 10 - 9999
+pageNo = 1
+numOfRows = 10
 
+path = '/B552584/EvCharger/getChargerInfo'
 result = []
+total_count = None
+
 while True:
+  params = {'numOfRows': numOfRows, 'pageNo': pageNo}
+  json_object = data_gov_client._call_api(path, params)
 
-  url = f'http://apis.data.go.kr/B552584/EvCharger/getChargerInfo?serviceKey={serviceKey}&numOfRows={numOfRows}&pageNo={pageNo}&dataType={dataType}'
-  response = urllib.request.urlopen(url)
-  json_str = response.read().decode('utf-8')
-  # print(json_str)
-  json_object = json.loads(json_str)
-  result.extend(json_object['items']['item'])
+  print(len(json_object['items']['item']))
+  break
 
-  print(f'{pageNo} / {response.code} => {len(json_object['items']['item'])}')
+  if json_object is None:
+    print(f"API 호출 최종 실패 (pageNo={pageNo}) — 수집된 {len(result)}건으로 진행합니다.")
+    break
 
-  if len(json_object['items']['item']) <= 0 or response.code != 200 :
+  try:
+    items = json_object['items']['item']
+    if total_count is None:
+      total_count = json_object['totalCount']
+      print(f"전체 데이터: {total_count}건")
+  except (KeyError, TypeError) as e:
+    print(f"응답 구조 오류: {e}")
+    break
+
+  result.extend(items)
+  print(f'{pageNo} => {len(result)}/{total_count}')
+
+  if len(result) >= total_count:
     break
 
   pageNo += 1
-final = pd.json_normalize(result)
 
-final.to_csv('ev_charger_all.csv', index=False, encoding='utf-8-sig')
-print(f'저장 완료: {len(final)}행')
+# final = pd.json_normalize(result)
+
+# # statId 기준 중복 제거 (chgerType 숫자 기준 가장 큰 값 유지)
+# final['chgerType'] = final['chgerType'].astype(int)
+# final = (final.sort_values('chgerType', ascending=False)
+#               .drop_duplicates(subset='statId', keep='first')
+#               .reset_index(drop=True))
+# print(f'중복 제거 후: {len(final)}행')
+
+# final.to_csv('ev_charger_all_clean.csv', index=False, encoding='utf-8-sig')
+# print(f'저장 완료: {len(final)}행')
 
 # print(final.info())
