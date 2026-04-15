@@ -1,5 +1,6 @@
 import streamlit as st
-from domain.ev_service import EVSchema
+from domain.ev_schema import EVSchema
+
 
 def render_sidebar(df):
     """
@@ -17,21 +18,19 @@ def render_sidebar(df):
     with st.sidebar:
         st.title("🔌 대시보드")
         st.markdown("---")
-        
+
         st.subheader("📊 데이터 개요")
         st.metric("전체 지역 수", len(df))
         st.metric("평균 불편 지수", f"{df[EVSchema.discomfort_index].mean():.2f}")
-        
+
         st.markdown("---")
         st.subheader("🔍 필터링")
-        
+
         # 지역 선택
         selected_region = st.selectbox(
-            "지역 선택",
-            options=['전체'] + df[EVSchema.region].tolist(),
-            index=0
+            "지역 선택", options=["전체"] + df[EVSchema.region].tolist(), index=0
         )
-        
+
         # 순위 범위 필터
         min_rank = int(df[EVSchema.discomfort_rank].min())
         max_rank = int(df[EVSchema.discomfort_rank].max())
@@ -39,12 +38,14 @@ def render_sidebar(df):
             "불편 순위 범위",
             min_value=min_rank,
             max_value=max_rank,
-            value=(min_rank, max_rank)
+            value=(min_rank, max_rank),
         )
-        
+
         st.markdown("---")
-        st.info("💡 **데이터 설명**\n"
-                "- **불편 지수**: 수요(전기차 수)에서 공급(충전기 수)을 뺀 값\n"
-                "- 지수가 높을수록 충전 인프라가 부족함을 의미")
-                
+        st.info(
+            "💡 **데이터 설명**\n"
+            "- **불편 지수**: 수요(전기차 수)에서 공급(충전기 수)을 뺀 값\n"
+            "- 지수가 높을수록 충전 인프라가 부족함을 의미"
+        )
+
     return selected_region, rank_range

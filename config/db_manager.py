@@ -17,7 +17,7 @@ class DBManager:
         try:
             if self.connection is None or not self.connection.is_connected():
                 self.connection = mysql.connector.connect(**self.config)
-            return self.connection.ex
+            return self.connection
         except Error as e:
             print(f"MySQL 연결 오류: {e}")
             return None
