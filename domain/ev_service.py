@@ -1,9 +1,23 @@
+import math
 import warnings
 
 from domain.load_by_csv import load_ev_by_year, load_ev_by_region
 from domain.ev_schema import EVSchema
 import pandas as pd
 import pandera.pandas as pa
+
+# TCII 가중치: w1(기기 경쟁), w2(공간적 거리), w3(도심 마찰 부하)
+W1, W2, W3 = 1/3, 1/3, 1/3
+
+
+def _calc_tcii(ev, charger, area, population):
+    """TCII = w1*(EV/Charger) + w2*sqrt(Area/Charger) + w3*(EV*Pop/Area^2)"""
+    c = charger if charger > 0 else 1
+    a = area if area > 0 else 1
+    term1 = ev / c
+    term2 = math.sqrt(a / c)
+    term3 = (ev * population) / (a ** 2)
+    return round(W1 * term1 + W2 * term2 + W3 * term3, 2)
 
 
 def load_ev_data():
@@ -52,11 +66,39 @@ def load_ev_data():
             if r in meta_lookup:
                 info.update(meta_lookup[r])
 
+    # 2-1) TCII 계산 및 연도별 지역 순위 산정
+    for y, regions in year.items():
+        for r, info in regions.items():
+            info[EVSchema.discomfort_index] = _calc_tcii(
+                info.get(EVSchema.ev_count, 0),
+                info.get(EVSchema.charger_count, 0),
+                info.get(EVSchema.area, 1),
+                info.get(EVSchema.population, 0),
+            )
+        indices = {r: d[EVSchema.discomfort_index] for r, d in regions.items()}
+        sorted_regions = sorted(indices, key=indices.get, reverse=True)
+        for rank, r in enumerate(sorted_regions, start=1):
+            regions[r][EVSchema.discomfort_rank] = rank
+
     # 3) region 딕셔너리에 메타데이터 삽입
     for r, years in region.items():
         if r in meta_lookup:
             for y, info in years.items():
                 info.update(meta_lookup[r])
+
+    # 3-1) region dict TCII 재계산 (year와 별도 객체)
+    for r, years in region.items():
+        for y, info in years.items():
+            info[EVSchema.discomfort_index] = _calc_tcii(
+                info.get(EVSchema.ev_count, 0),
+                info.get(EVSchema.charger_count, 0),
+                info.get(EVSchema.area, 1),
+                info.get(EVSchema.population, 0),
+            )
+        indices = {y: d[EVSchema.discomfort_index] for y, d in years.items()}
+        sorted_years = sorted(indices, key=indices.get, reverse=True)
+        for rank, y in enumerate(sorted_years, start=1):
+            years[y][EVSchema.discomfort_rank] = rank
 
     df_year = pd.DataFrame(year)
     df_region = pd.DataFrame(region)

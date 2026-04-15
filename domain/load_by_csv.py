@@ -46,22 +46,12 @@ def load_ev_by_year():
         if year not in result:
             result[year] = {}
 
-        # 충전기 1대당 전기차 수 (값이 클수록 충전이 불편함을 의미)
-        charger = row[EVSchema.charger_count] if row[EVSchema.charger_count] > 0 else 1
         result[year][region] = {
             EVSchema.year: year,
             EVSchema.region: region,
             EVSchema.ev_count: row[EVSchema.ev_count],
             EVSchema.charger_count: row[EVSchema.charger_count],
-            EVSchema.discomfort_index: round(row[EVSchema.ev_count] / charger, 2),
         }
-
-    # 순위 계산: 연도별로 discomfort_index 기준 내림차순 순위
-    for year, regions in result.items():
-        indices = {r: d[EVSchema.discomfort_index] for r, d in regions.items()}
-        sorted_regions = sorted(indices, key=indices.get, reverse=True)
-        for rank, r in enumerate(sorted_regions, start=1):
-            regions[r][EVSchema.discomfort_rank] = rank
 
     return result
 
