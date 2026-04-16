@@ -6,7 +6,8 @@ import pandas as pd
 import pandera.pandas as pa
 
 
-def load_ev_data():
+
+def load_ev_data_old():
     """
     전국 시도별 전기차 등록 현황 및 충전 인프라 데이터를 로드하고 전처리합니다.
     """
@@ -62,22 +63,6 @@ def load_ev_data():
     df_region = pd.DataFrame(region)
 
     return df_year, df_region
-
-def filter_data(df, selected_region, rank_range):
-    """
-    사용자가 선택한 지역 및 불편 순위 범위에 따라 데이터를 필터링합니다.
-    """
-    if selected_region != '전체':
-        df_filtered = df[df[EVSchema.region] == selected_region]
-    else:
-        df_filtered = df.copy()
-
-    # 순위 범위 필터 적용
-    df_filtered = df_filtered[(df_filtered[EVSchema.discomfort_rank] >= rank_range[0]) & 
-                            (df_filtered[EVSchema.discomfort_rank] <= rank_range[1])]
-    
-    return df_filtered
-
 
 # =================================================================
 # Pandera Schema & Validation Helpers

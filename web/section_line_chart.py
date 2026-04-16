@@ -12,14 +12,7 @@ def section_line_chart(df):
         st.warning("선택된 조건에 해당하는 데이터가 없습니다.")
         return
 
-    # 제공된 DataFrame(연도/지역의 딕셔너리 구조)을 평탄화(Flat) 합니다.
-    data_list = []
-    for col in df.columns:
-        for val in df[col].dropna().tolist():
-            if isinstance(val, dict):
-                data_list.append(val)
-                
-    flat_df = pd.DataFrame(data_list)
+    flat_df = df
 
     if flat_df.empty:
         st.warning("선택된 조건에 해당하는 데이터가 없습니다.")
