@@ -28,20 +28,22 @@
 
 ## 2. 기술 스택
 
-| Python | Pandas | Plotly | Streamlit | Folium | Selenium | GitHub |
-|:------:|:------:|:------:|:---------:|:------:|:--------:|:------:|
-| ![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white) | ![Pandas](https://img.shields.io/badge/Pandas-150458?style=for-the-badge&logo=pandas&logoColor=white) | ![Plotly](https://img.shields.io/badge/Plotly-3F4F75?style=for-the-badge&logo=plotly&logoColor=white) | ![Streamlit](https://img.shields.io/badge/Streamlit-FF4B4B?style=for-the-badge&logo=streamlit&logoColor=white) | ![Folium](https://img.shields.io/badge/Folium-77B829?style=for-the-badge&logo=folium&logoColor=white) | ![Selenium](https://img.shields.io/badge/Selenium-43B02A?style=for-the-badge&logo=selenium&logoColor=white) | ![GitHub](https://img.shields.io/badge/GitHub-181717?style=for-the-badge&logo=github&logoColor=white) |
+| Python | MySQL | Streamlit | Plotly | Pandas | Git | GitHub | uv | VS Code |
+|:------:|:-----:|:---------:|:------:|:------:|:---:|:------:|:--:|:-------:|
+| ![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white) | ![MySQL](https://img.shields.io/badge/MySQL-00618A?style=for-the-badge&logo=mysql&logoColor=white) | ![Streamlit](https://img.shields.io/badge/Streamlit-FF4B4B?style=for-the-badge&logo=streamlit&logoColor=white) | ![Plotly](https://img.shields.io/badge/Plotly-3F4F75?style=for-the-badge&logo=plotly&logoColor=white) | ![Pandas](https://img.shields.io/badge/Pandas-150458?style=for-the-badge&logo=pandas&logoColor=white) | ![Git](https://img.shields.io/badge/Git-F05032?style=for-the-badge&logo=git&logoColor=white) | ![GitHub](https://img.shields.io/badge/GitHub-24292F?style=for-the-badge&logo=github&logoColor=white) | ![uv](https://img.shields.io/badge/uv-DE5FE9?style=for-the-badge&logoColor=white) | ![VS Code](https://img.shields.io/badge/VS%20Code-0A84FF?style=for-the-badge) |
 
 ### 상세 의존성
 
 | 분류 | 라이브러리 | 용도 |
 |:---|:---|:---|
-| 웹 프레임워크 | streamlit | 대시보드 UI 레이아웃 |
-| 데이터 처리 | pandas | 데이터프레임 구조화 및 변환 (Melt, Merge) |
-| 시각화 (차트) | plotly | 동적 Line/Bar 차트 생성 |
-| 시각화 (지도) | folium, streamlit-folium | 핫스팟 히트맵 렌더링 |
-| 데이터 검증 | pandera | EVSchema 기반 입출력 데이터 타입 보장 |
-| 의존성 관리 | uv | 초고속 파이썬 패키지 제어 |
+| 프로그래밍 언어 | Python 3.13 | 메인 데이터 분석 및 서비스 개발 환경 |
+| 데이터베이스 | MySQL | 실 서비스 스키마 설계 및 데이터 적재 |
+| 데이터 처리 | Pandas, NumPy, Pandera | 데이터 전처리, 수학 연산, 데이터프레임 스키마 검증 |
+| 웹 프레임워크 | Streamlit | 대시보드 UI 레이아웃 및 상호작용 |
+| 시각화 (차트·지도) | Plotly, Folium, WordCloud | 반응형 차트 생성, 핫스팟 히트맵 매핑, 키워드 시각화 |
+| 크롤링 | BeautifulSoup4, Selenium | 외부 FAQ 텍스트 데이터 분리 및 리뷰 동적 크롤링 |
+| 의존성 관리 | uv | 초고속 파이썬 패키지 및 개발 환경 제어 |
+| 형상 관리 및 IDE | Git, GitHub, VS Code | 프로젝트 형상 관리 및 소스코드 에디터 (협업) |
 
 ---
 
