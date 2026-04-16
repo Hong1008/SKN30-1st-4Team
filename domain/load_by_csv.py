@@ -63,7 +63,7 @@ def load_ev():
         merged_df[field] = merged_df[EVSchema.region].map(lambda r: meta_lookup.get(r, {}).get(field))
 
     # 불편 지수(TCII) 계산
-    # 수식: w1 * (EV / Charger) + w2 * sqrt(Area / Charger) 
+    # 수식: 2 * (EV / Charger) + 1 * (Area / Charger) ** 0.5
     chargers = merged_df[EVSchema.charger_count].replace(0, 1)  # 분모 0 방지
     
     # 가중치 (초기값으로 모두 1 부여, 필요에 따라 수정 가능)
