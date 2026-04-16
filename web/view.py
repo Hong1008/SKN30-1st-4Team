@@ -68,6 +68,7 @@ def show_data_by_year(df):
             st.markdown(f"""
             <div class="stat-card">
                 <div class="stat-label"><span class="emoji-icon"> 🏆 </span> 전기차 최다 지역</div>
+                <div class="stat-label"><span class="emoji-icon">🏆</span> 전기차 최다 지역</div>
                 <div class="stat-region">{top_ev[EVSchema.region]}</div>
                 <div class="stat-value">{int(top_ev[EVSchema.ev_count]):,} 대</div>
             </div>
@@ -76,7 +77,7 @@ def show_data_by_year(df):
         with center1:
             st.markdown(f"""
             <div class="stat-card">
-                <div class="stat-label"><span class="emoji-icon"> ⭐ </span> 충전기 최다 지역</div>
+                <div class="stat-label"><span class="emoji-icon">⭐</span> 충전기 최다 지역</div>
                 <div class="stat-region">{top_charger[EVSchema.region]}</div>
                 <div class="stat-value">{int(top_charger[EVSchema.charger_count]):,} 기</div>
             </div>
@@ -85,7 +86,7 @@ def show_data_by_year(df):
         with right1:
             st.markdown(f"""
             <div class="stat-card">
-                <div class="stat-label"><span class="emoji-icon"> 🔥 </span> 불편지수 최고 지역</div>
+                <div class="stat-label"><span class="emoji-icon">🔥</span> 불편지수 최고 지역</div>
                 <div class="stat-region">{top_discomfort[EVSchema.region]}</div>
                 <div class="stat-value">지수 {top_discomfort[EVSchema.discomfort_index]:.2f}</div>
             </div>
