@@ -183,7 +183,7 @@ uv run streamlit run main.py
 |:---|:---|
 | 언어 | Python 3.13 |
 | 데이터 처리 | Pandas, NumPy, Pandera |
-| 크롤링 | BeautifulSoup4, Selenium |
+| 크롤링 | Selenium |
 | DB | MySQL |
 | 시각화 | Streamlit, Plotly, Folium, WordCloud |
 | 패키지 관리 | uv |

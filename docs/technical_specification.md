@@ -41,7 +41,7 @@
 | 데이터 처리 | Pandas, NumPy, Pandera | 데이터 전처리, 수학 연산, 데이터프레임 스키마 검증 |
 | 웹 프레임워크 | Streamlit | 대시보드 UI 레이아웃 및 상호작용 |
 | 시각화 (차트·지도) | Plotly, Folium, WordCloud | 반응형 차트 생성, 핫스팟 히트맵 매핑, 키워드 시각화 |
-| 크롤링 | BeautifulSoup4, Selenium | 외부 FAQ 텍스트 데이터 분리 및 리뷰 동적 크롤링 |
+| 크롤링 | Selenium | 외부 FAQ 텍스트 데이터 분리 및 리뷰 동적 크롤링 |
 | 의존성 관리 | uv | 초고속 파이썬 패키지 및 개발 환경 제어 |
 | 형상 관리 및 IDE | Git, GitHub, VS Code | 프로젝트 형상 관리 및 소스코드 에디터 (협업) |
 
