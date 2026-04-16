@@ -19,7 +19,7 @@ def show_data_by_year(df):
     # 선택된 연도로 필터링
     df_filtered = df[df[EVSchema.year].astype(str) == selected_year]
 
-    left, center, right = st.columns([2,0.2,3], vertical_alignment='center')
+    left, center, right = st.columns([2,0.2,3], vertical_alignment='top')
     with left:
         section_map(df_filtered, selected_year)
 

@@ -4,6 +4,7 @@ from pathlib import Path
 BASE_DIR = Path(__file__).parent.parent
 
 def section_wordcloud(selected_year):
+  st.subheader('')
   image_path = BASE_DIR / "domain" / "crawling" / "word_cloud" / f"{selected_year}.jpg"
   if not image_path.exists():
     return
