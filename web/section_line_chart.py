@@ -1,6 +1,5 @@
 import streamlit as st
 from domain.ev_service import EVSchema
-import pandas as pd
 
 
 def section_line_chart(df):

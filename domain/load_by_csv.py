@@ -74,7 +74,7 @@ def load_ev():
     # 2. 공간적 거리 (sqrt(Area / Charger))
     dist_term = (merged_df[EVSchema.area] / chargers) ** 0.5
     
-    merged_df[EVSchema.discomfort_index] = (w1 * comp_term + w2 * dist_term ).round(2)
+    merged_df[EVSchema.discomfort_index] = (w1 * comp_term + w2 * dist_term).round(2)
 
     return merged_df.reset_index(drop=True)
 

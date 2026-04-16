@@ -5,13 +5,15 @@ from domain.ev_schema import EVSchema
 
 def section_data_table(df, selected_region, key="default"):
     """상세 데이터 테이블과 다운로드 버튼을 렌더링합니다."""
+    
     st.markdown("---")
 
     if df.empty:
         st.warning("선택된 조건에 해당하는 데이터가 없습니다.")
         return
 
-    df_filtered = df.drop(columns=[EVSchema.lat, EVSchema.lon], errors='ignore')
+    df_filtered = df.sort_values(by=EVSchema.discomfort_index, ascending=False)
+    df_filtered = df_filtered.drop(columns=[EVSchema.lat, EVSchema.lon], errors='ignore')
 
     if df_filtered.empty:
         st.warning("선택된 조건에 해당하는 데이터가 없습니다.")
