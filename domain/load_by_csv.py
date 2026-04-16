@@ -76,6 +76,8 @@ def load_ev():
     
     merged_df[EVSchema.discomfort_index] = (w1 * comp_term + w2 * dist_term).round(2)
 
+    merged_df[EVSchema.discomfort_rank] = merged_df.groupby(EVSchema.year)[EVSchema.discomfort_index].rank(ascending=False, method='min').astype(int)
+
     return merged_df.reset_index(drop=True)
 
 def load_ev_by_year():
