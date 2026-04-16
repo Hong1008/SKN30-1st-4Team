@@ -1,5 +1,4 @@
 import folium
-import pandas as pd
 import streamlit as st
 from domain.ev_schema import EVSchema
 from streamlit_folium import st_folium
@@ -7,15 +6,15 @@ from streamlit_folium import st_folium
 
 def section_map(df, selected_year):
     """SOS 핫스팟 히트맵을 렌더링합니다."""
-    if selected_year == '전체':
+    if selected_year == "전체":
         st.subheader("📍 SOS 핫스팟 히트맵")
     else:
         st.subheader(f"📍 {selected_year}년도 SOS 핫스팟 히트맵")
     m = folium.Map(
         location=[36.5, 127.5],
-        zoom_start=7,
+        zoom_start=6.3,
         # tiles='CartoDB positron'
-        tiles='OpenStreetMap'
+        tiles="OpenStreetMap",
     )
 
     if df.empty:
@@ -25,7 +24,9 @@ def section_map(df, selected_year):
     flat_df = df
 
     if EVSchema.discomfort_rank not in flat_df.columns:
-        flat_df[EVSchema.discomfort_rank] = flat_df.groupby(EVSchema.year)[EVSchema.discomfort_index].rank(ascending=False, method='min')
+        flat_df[EVSchema.discomfort_rank] = flat_df.groupby(EVSchema.year)[
+            EVSchema.discomfort_index
+        ].rank(ascending=False, method="min")
 
     if flat_df.empty:
         st.warning("선택된 조건에 해당하는 데이터가 없습니다.")
@@ -36,8 +37,12 @@ def section_map(df, selected_year):
 
     for _, row in flat_df.iterrows():
         value = row.get(EVSchema.discomfort_index, 0)
-        normalized = (value - min_val) / (max_val - min_val) if (max_val - min_val) > 0 else 0
-        color = 'blue' if normalized < 0.33 else 'orange' if normalized < 0.66 else 'red'
+        normalized = (
+            (value - min_val) / (max_val - min_val) if (max_val - min_val) > 0 else 0
+        )
+        color = (
+            "blue" if normalized < 0.33 else "orange" if normalized < 0.66 else "red"
+        )
 
         popup_html = f"""
         <div style="width: 200px;">
