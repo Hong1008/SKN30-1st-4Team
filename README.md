@@ -1,6 +1,24 @@
 # 🔌 전기차 충전 인프라 대시보드 (SKN30-1st-4Team)
 
 전국 전기차 등록 현황 대비 충전 인프라 공급량을 분석하여, 충전이 가장 불편한 'SOS 핫스팟'을 시각화하는 프로젝트입니다.
+---
+
+## 🛠️ 기술 스택 (Tech Stack)
+
+### 📊 Frontend & Visualization
+- **Streamlit**: 대시보드 웹 UI 프레임워크
+- **Plotly**: 반응형 멀티태스킹 데이터 차트 생성
+- **Folium**: 지리 공간 데이터 시각화 (핫스팟 분석)
+
+### 🧠 Backend & Data Processing
+- **Python 3**: 메인 프로그래밍 언어
+- **Pandas**: 데이터 로드 및 전처리 (CSV 등)
+- **Pandera**: DataFrame 스키마 검증 및 데이터 안정성 확보
+- **Mysql**: 통계 및 메타데이터 저장
+
+### ⚙️ Environment & Tools
+- **uv**: 파이썬 의존성 및 패키지 관리
+- **Git & GitHub**: 형상 관리 및 팀 협업
 
 ---
 
@@ -10,25 +28,29 @@
 🚘 SKN30-1st-4Team/
 ├── ⚙️ config/                # 설정 및 공통 모듈
 │   ├── config.py             # 환경 변수 로드 및 전역 설정
-│   ├── db_manager.py         # MySQL 연결 및 쿼리 실행 매니저
+│   ├── db_manager.py         # MySQL 연결 및 쿼리 실행
 │   └── __init__.py           # 패키지 노출 설정
 ├── 🧠 domain/                # 비즈니스 로직 및 데이터 처리
-│   ├── ev_service.py         # 데이터 로드/전처리/분석 핵심 로직
-│   ├── crawling/             # 크롤링
-│   ├── source/               # 수집한 데이터
-│   └── source_cleansing/     # 정제한 데이터
+│   ├── ev_service.py         # 데이터 전처리 및 분석 프레임워크
+│   ├── load_by_csv.py        # CSV 기반 데이터 로드 및 불편 지수(TCII) 산출
+│   ├── load_by_db.py         # DB 기반 데이터 파이프라인
+│   ├── ev_schema.py          # 데이터 스키마 정의 (Pandera)
+│   ├── crawling/             # 외부 크롤링 스크립트
+│   ├── src_raw/              # 수집한 원본 데이터
+│   ├── src_clean/            # 분석용 1차 정제 데이터
+│   └── sql/                  # DB 테이블 쿼리문
 ├── 🎨 web/                   # Streamlit UI 컴포넌트
-│   ├── sidebar.py            # 사이드바 필터 및 요약 정보
+│   ├── view.py               # UI 메인 레이아웃 및 탭 제어
 │   ├── section_map.py        # 지도 시각화 (핫스팟)
-│   ├── section_charts.py     # 통계 차트 (Plotly)
-│   ├── section_table.py      # 상세 데이터 표
-│   └── section_insights.py   # 분석 인사이트 요약
+│   ├── section_comparison_chart.py  # 수요-공급 현황 비교 바 차트
+│   ├── section_line_chart.py # 연도별/지역별 동향 라인 차트
+│   ├── section_data_table.py # 상세 데이터 표 및 CSV 다운로드
+│   ├── section_wordcloud.py  # 키워드 워드 클라우드
 ├── 📄 docs/                  # 프로젝트 문서
-│   └── planning.md           # 기획 및 설계서
 ├── 🚀 Root Files
 │   ├── main.py               # 대시보드 메인 실행 파일
-│   ├── .env                  # DB/API 보안 설정 (Git 제외)
-│   ├── pyproject.toml        # 의존성 관리 (uv)
+│   ├── .env                  # 환경 변수 보안 설정 (Git 제외)
+│   ├── pyproject.toml        # 의존성 관리 설정 (uv)
 │   └── README.md             # 프로젝트 개요 및 가이드
 ```
 
