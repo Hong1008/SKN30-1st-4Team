@@ -195,6 +195,7 @@ uv run streamlit run main.py
 - [프로젝트 기획서](./docs/planning.md)
 - [요구사항 명세서](./docs/requirements.md)
 - [기술 명세서](./docs/technical_specification.md)
+- [발표 자료](./docs/SKN30_1st_4Team_발표자료_파이널.pdf)
 
 ---
 
