@@ -1,6 +1,5 @@
 import plotly.express as px
 import streamlit as st
-import pandas as pd
 from domain.ev_schema import EVSchema
 
 
