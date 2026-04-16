@@ -67,7 +67,6 @@ def show_data_by_year(df):
         with left1:
             st.markdown(f"""
             <div class="stat-card">
-                <div class="stat-label"><span class="emoji-icon"> 🏆 </span> 전기차 최다 지역</div>
                 <div class="stat-label"><span class="emoji-icon">🏆</span> 전기차 최다 지역</div>
                 <div class="stat-region">{top_ev[EVSchema.region]}</div>
                 <div class="stat-value">{int(top_ev[EVSchema.ev_count]):,} 대</div>
